@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hufflepuff Wizard Tower</title>
+    <style>
+        :root {
+            --floor-height: 100vh;
+            --huffle-yellow: #ecb939;
+            --huffle-black: #372e29;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            overflow: hidden;
+            background: #1a1a1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* The Tower Container */
+        #tower-viewport {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #tower-world {
+            width: 100%;
+            height: calc(5 * var(--floor-height));
+            position: absolute;
+            bottom: 0; /* Start at the basement */
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            background-image: url('tower.jpg'); /* REPLACE WITH YOUR IMAGE LINK */
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* The Character Sprite */
+        #player {
+            width: 60px;
+            height: 80px;
+            background: rgba(236, 185, 57, 0.8);
+            border: 2px solid white;
+            border-radius: 8px;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: left 0.2s linear;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            z-index: 10;
+        }
+
+        /* UI Elements */
+        #ui-layer {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+            pointer-events: none;
+        }
+
+        #controls {
+            position: fixed;
+            bottom: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            width: 60px;
+            height: 60px;
+            background: var(--huffle-yellow);
+            color: var(--huffle-black);
+            border: none;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .btn:active { transform: scale(0.9); }
+    </style>
+</head>
+<body>
+
+<div id="tower-viewport">
+    <div id="ui-layer">Floor: <span id="floor-name">Basement</span></div>
+    
+    <div id="tower-world">
+        <div id="player">🧙‍♂️</div>
+    </div>
+
+    <div id="controls">
+        <button class="btn" onmousedown="moveLeft()" ontouchstart="moveLeft()">←</button>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="btn" onclick="moveUp()">UP</button>
+            <button class="btn" onclick="moveDown()">DN</button>
+        </div>
+        <button class="btn" onmousedown="moveRight()" ontouchstart="moveRight()">→</button>
+    </div>
+</div>
+
+<script>
+    let currentFloor = 0; // 0 is Basement, 4 is Observatory
+    let posX = 50; // Percentage
+    const floors = ["Basement", "Ground Floor", "Library", "Bedrooms", "Observatory"];
+    const world = document.getElementById('tower-world');
+    const player = document.getElementById('player');
+    const floorLabel = document.getElementById('floor-name');
+
+    function updateView() {
+        // Moves the background
+        world.style.transform = `translateY(${currentFloor * 20}%)`;
+        floorLabel.innerText = floors[currentFloor];
+        
+        // Animates player appearing on the new floor
+        player.style.bottom = `calc(${currentFloor * 20}% + 20px)`;
+    }
+
+    function moveUp() {
+        if (currentFloor < 4) {
+            currentFloor++;
+            updateView();
+        }
+    }
+
+    function moveDown() {
+        if (currentFloor > 0) {
+            currentFloor--;
+            updateView();
+        }
+    }
+
+    function moveLeft() {
+        if (posX > 10) posX -= 5;
+        player.style.left = posX + "%";
+    }
+
+    function moveRight() {
+        if (posX < 90) posX += 5;
+        player.style.left = posX + "%";
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "ArrowUp") moveUp();
+        if (e.key === "ArrowDown") moveDown();
+        if (e.key === "ArrowLeft") moveLeft();
+        if (e.key === "ArrowRight") moveRight();
+    });
+</script>
+
+</body>
+</html>
